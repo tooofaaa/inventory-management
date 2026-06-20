@@ -27,6 +27,12 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             {children}
           </Suspense>
         </main>
+        <footer className="mt-6 py-4 px-6 border-t border-gray-100 text-center">
+          <p className="text-sm text-gray-400 tracking-wide">
+            Developed by{" "}
+            <span className="font-semibold text-gray-500">Jupi Solutions</span>
+          </p>
+        </footer>
       </div>
     </div>
   );

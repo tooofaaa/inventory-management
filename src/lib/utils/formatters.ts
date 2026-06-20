@@ -1,49 +1,49 @@
 /**
- * Formats a number or string into Indonesian Rupiah currency format.
- * Returns "Rp 0" if the input is invalid or NaN.
+ * Formats a number or string into Saudi Riyal (SAR) currency format.
+ * Returns "SAR 0" if the input is invalid or NaN.
  *
  * @param amount - The value to format (number or string).
- * @returns The formatted currency string (e.g., "Rp 150.000").
+ * @returns The formatted currency string (e.g., "SAR 1,500").
  *
  * @example
- * formatCurrency(150000); // "Rp 150.000"
+ * formatCurrency(1500); // "SAR 1,500"
  */
 export function formatCurrency(amount: number | string): string {
   const numericAmount =
     typeof amount === "string" ? parseFloat(amount) : amount;
 
   if (isNaN(numericAmount)) {
-    return "Rp 0";
+    return "SAR 0";
   }
 
-  const formatter = new Intl.NumberFormat("id-ID", {
+  const formatter = new Intl.NumberFormat("en-SA", {
     style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    currency: "SAR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   });
 
   return formatter.format(numericAmount);
 }
 
 /**
- * Formats a large number into a compact Indonesian Rupiah string.
+ * Formats a large number into a compact Saudi Riyal (SAR) string.
  * Useful for dashboards or charts where space is limited.
  *
  * @param amount - The value to format.
- * @returns The compact currency string (e.g., "Rp 1,5 jt" or similar depending on locale implementation).
+ * @returns The compact currency string (e.g., "SAR 1.5K").
  */
 export function formatCurrencyShort(amount: number | string): string {
   const numericAmount =
     typeof amount === "string" ? parseFloat(amount) : amount;
 
   if (isNaN(numericAmount)) {
-    return "Rp 0";
+    return "SAR 0";
   }
 
-  const formatter = new Intl.NumberFormat("id-ID", {
+  const formatter = new Intl.NumberFormat("en-SA", {
     style: "currency",
-    currency: "IDR",
+    currency: "SAR",
     notation: "compact",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
