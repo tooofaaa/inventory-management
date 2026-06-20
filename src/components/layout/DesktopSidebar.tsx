@@ -11,10 +11,10 @@ export default function DesktopSidebar() {
     <aside className="py-6 px-6 h-screen w-56 bg-white shadow-md fixed flex flex-col justify-between">
       <div>
         <Image
-          src="/logo-BM.svg"
-          width={150}
-          height={150}
-          alt="Logo-BM"
+          src="/logo.png"
+          width={80}
+          height={80}
+          alt="Logo"
           className="pb-4"
         />
         <div className="flex flex-col gap-4">

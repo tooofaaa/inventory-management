@@ -19,7 +19,6 @@ export async function insertOrder(
   } = await supabase.auth.getUser();
   if (!user) return { success: false, message: "Not authenticated" };
 
-  console.log(formData.get("supplier_id"));
 
   const supplier_id = Number(formData.get("supplier_id"));
   const status = formData.get("status") as string;
@@ -45,7 +44,6 @@ export async function insertOrder(
     0
   );
 
-  console.log(supplier_id);
 
   const { data: newOrderId, error } = await supabase.rpc(
     "create_new_purchase_order",

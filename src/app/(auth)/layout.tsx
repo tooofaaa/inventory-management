@@ -8,11 +8,11 @@ export default function AuthLayout({
   return (
     <div className="flex flex-row items-center justify-around h-screen">
       <Image
-        src="/logo-BM.svg"
-        width={300}
-        height={200}
-        alt="Logo BM"
-        className="hidden sm:block"
+        src="/logo.png"
+        width={32}
+        height={32}
+        alt="Logo"
+        className="mr-2 hidden sm:block"
       />
 
       {children}

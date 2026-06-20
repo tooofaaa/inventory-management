@@ -68,7 +68,6 @@ export default function AddOrder({
 
   const productOptions = useMemo(() => {
     if (!selectedSupplierId) return [];
-    console.log(selectedSupplierId);
     return products
       .filter((p) => String(p.supplier_id) === String(selectedSupplierId))
       .map((p) => ({

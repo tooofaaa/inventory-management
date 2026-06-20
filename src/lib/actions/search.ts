@@ -90,6 +90,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
   });
 
   sales.data?.forEach((s) => {
+    if (!s.invoice_code) return; // skip sales without an invoice code
     results.push({
       id: s.id,
       title: s.invoice_code,
@@ -100,6 +101,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
   });
 
   orders.data?.forEach((o) => {
+    if (!o.po_code) return; // skip orders without a PO code
     results.push({
       id: o.id,
       title: o.po_code,

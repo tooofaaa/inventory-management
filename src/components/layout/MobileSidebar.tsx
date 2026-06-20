@@ -41,10 +41,10 @@ export default function MobileSidebar({
           <div className="flex flex-col flex-grow">
             <div className="flex items-center justify-between pb-4">
               <Image
-                src="/logo-BM.svg"
-                width={120}
-                height={120}
-                alt="Logo-BM"
+                src="/logo.png"
+                width={80}
+                height={80}
+                alt="Logo"
               />
               <button
                 onClick={() => setIsOpen(false)}

@@ -48,7 +48,7 @@ Follow these steps to run the project locally.
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/BoviliusMeidi/inventory-management.git
+git clone https://github.com/JupiSolutions/inventory-management.git
 cd inventory-management
 ```
 
@@ -125,8 +125,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ## 👨‍💻 Author
-**Bovilius Meidi**
+**Jupi Solutions**
 
-* Website: [BoviliusMeidi.vercel.app](https://portfolio-boviliusmeidis-projects.vercel.app/)
-* LinkedIn: [BoviliusMeidi](https://linkedin.com/in/boviliusmeidi)
-* GitHub: [@BoviliusMeidi](https://github.com/BoviliusMeidi)
+* Website: [JupiSolutions.com](https://jupisolutions.com/)
+* GitHub: [@JupiSolutions](https://github.com/JupiSolutions)

@@ -166,7 +166,8 @@ export async function updateProduct(
     return { success: false, message: `Update failed: ${error.message}` };
   }
 
-  if (oldProduct.product_image) {
+  // Only delete old image if we successfully uploaded a replacement
+  if (imageFile && imageFile instanceof File && imageFile.size > 0 && oldProduct.product_image) {
     await deleteProductImage(oldProduct.product_image);
   }
 
@@ -333,13 +334,13 @@ export async function getProductById(id: string): Promise<Product | null> {
     .match({ id: numericId })
     .single();
 
-  if (!data) {
-    return redirect("/inventory");
-  }
-
   if (error) {
     console.error("Error fetching product:", error.message);
     return null;
+  }
+
+  if (!data) {
+    return redirect("/inventory");
   }
 
   return data;

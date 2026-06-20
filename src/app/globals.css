@@ -17,9 +17,23 @@
 }
 
 body {
-  /* color: var(--foreground); */
-  background: var(--background);
-  font-family: var(--font-poppins);
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  background-attachment: fixed;
+  font-family: var(--font-poppins), sans-serif;
+  color: var(--foreground);
+  transition: all 0.3s ease-in-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(135deg, #1e2024 0%, #17181c 100%);
+  }
+}
+
+/* Global focus outline improvement */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 /* Hide number input spinners for Chrome, Safari, Edge, Opera */
