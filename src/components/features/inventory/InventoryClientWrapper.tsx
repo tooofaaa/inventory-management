@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import AddProduct from "@/components/features/inventory/AddProduct";
 import ProductTable from "@/components/features/inventory/ProductTable";
 import FilterDropdown, { DropdownOption } from "@/components/ui/FilterDropdown";
@@ -66,10 +66,12 @@ export default function InventoryClientWrapper({
           />
         </div>
       </div>
-      <ProductTable
-        selectedFilter={selectedFilter}
-        refreshKey={refreshKey}
-      />
+      <Suspense fallback={<div className="p-4 text-gray-500">Loading products...</div>}>
+        <ProductTable
+          selectedFilter={selectedFilter}
+          refreshKey={refreshKey}
+        />
+      </Suspense>
     </div>
   );
 }

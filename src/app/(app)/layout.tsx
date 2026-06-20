@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 
@@ -22,7 +22,11 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
       <div className={mainContentClasses}>
         <Topbar onMenuClick={() => setIsMobileSidebarOpen(true)} />
-        <main className="pt-3 mx-3 md:mx-0">{children}</main>
+        <main className="pt-3 mx-3 md:mx-0">
+          <Suspense fallback={<div className="flex items-center justify-center p-8 text-gray-500">Loading...</div>}>
+            {children}
+          </Suspense>
+        </main>
       </div>
     </div>
   );

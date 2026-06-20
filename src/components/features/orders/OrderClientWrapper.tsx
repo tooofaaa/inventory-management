@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import AddOrder from "@/components/features/orders/AddOrder";
 import OrderTable from "@/components/features/orders/OrderTable";
 import FilterDropdown, { DropdownOption } from "@/components/ui/FilterDropdown";
@@ -44,11 +44,13 @@ export default function OrderClientWrapper({
           />
         </div>
       </div>
-      <OrderTable
-        selectedFilter={selectedFilter}
-        refreshKey={refreshKey}
-        onOrderChange={triggerRefresh}
-      />
+      <Suspense fallback={<div className="p-4 text-gray-500">Loading orders...</div>}>
+        <OrderTable
+          selectedFilter={selectedFilter}
+          refreshKey={refreshKey}
+          onOrderChange={triggerRefresh}
+        />
+      </Suspense>
     </div>
   );
 }

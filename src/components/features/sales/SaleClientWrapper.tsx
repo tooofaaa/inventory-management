@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import AddSale from "./AddSale";
 import SaleTable from "./SaleTable";
 import FilterDropdown, { DropdownOption } from "@/components/ui/FilterDropdown";
@@ -58,12 +58,14 @@ export default function SaleClientWrapper({
           />
         </div>
       </div>
-      <SaleTable
-        refreshKey={refreshKey}
-        statusFilter={statusFilter}
-        methodFilter={methodFilter}
-        onOrderChange={triggerRefresh}
-      />
+      <Suspense fallback={<div className="p-4 text-gray-500">Loading sales...</div>}>
+        <SaleTable
+          refreshKey={refreshKey}
+          statusFilter={statusFilter}
+          methodFilter={methodFilter}
+          onOrderChange={triggerRefresh}
+        />
+      </Suspense>
     </div>
   );
 }

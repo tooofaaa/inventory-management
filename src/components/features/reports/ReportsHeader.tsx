@@ -1,4 +1,5 @@
 import DateRangeFilter from "@/components/features/reports/DateRangeFilter";
+import { Suspense } from "react";
 
 export default function ReportsHeader() {
   return (
@@ -13,7 +14,9 @@ export default function ReportsHeader() {
           </p>
         </div>
         <div className="w-full md:w-auto">
-          <DateRangeFilter />
+          <Suspense fallback={<div className="h-10 w-48 bg-gray-100 rounded animate-pulse" />}>
+            <DateRangeFilter />
+          </Suspense>
         </div>
       </div>
     </div>

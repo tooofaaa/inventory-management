@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 
@@ -75,7 +75,9 @@ export default function DashboardClientWrapper({
         <ProductSummary data={data.products} />
       </div>
       <div className="flex flex-col md:flex-row gap-3">
-        <SalesPurchaseChart data={data.charts} />
+        <Suspense fallback={<div className="h-64 w-full bg-gray-100 rounded animate-pulse" />}>
+          <SalesPurchaseChart data={data.charts} />
+        </Suspense>
         <OrderSummaryChart data={data.charts} />
       </div>
       <div className="flex flex-col md:flex-row gap-3">
