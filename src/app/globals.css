@@ -5,35 +5,50 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #F0F1F3;
-    --foreground: #ededed;
-  }
+  --background: #f8f9fc;
+  --foreground: #0f172a;
+  --accent: #6366f1;
+  --accent-light: #a5b4fc;
 }
 
 body {
-  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-  background-attachment: fixed;
+  background: var(--background);
   font-family: var(--font-poppins), sans-serif;
   color: var(--foreground);
-  transition: all 0.3s ease-in-out;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background: linear-gradient(135deg, #1e2024 0%, #17181c 100%);
-  }
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.4);
 }
 
-/* Global focus outline improvement */
+/* Global focus outline */
 *:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid #6366f1;
   outline-offset: 2px;
+}
+
+/* Dropdown enter animation */
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Hide number input spinners for Chrome, Safari, Edge, Opera */
@@ -46,4 +61,23 @@ body {
 /* Hide number input spinners for Firefox */
 .no-spinner {
   -moz-appearance: textfield;
+}
+
+/* RTL support */
+[dir="rtl"] .md\:ml-60 {
+  margin-left: 0;
+  margin-right: 15rem; /* 60 * 4 = 240px */
+}
+
+[dir="rtl"] aside {
+  left: auto;
+  right: 0;
+}
+
+[dir="rtl"] .translate-x-full {
+  transform: translateX(100%);
+}
+
+[dir="rtl"] .-translate-x-full {
+  transform: translateX(0);
 }

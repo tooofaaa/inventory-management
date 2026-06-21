@@ -40,34 +40,70 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   }, []);
 
   return (
-    <div className="flex flex-row justify-between items-center gap-2 px-4 py-4 md:pr-6 bg-white shadow-md relative z-20">
+    <div
+      className="flex flex-row justify-between items-center gap-3 px-4 py-3 md:pr-6 relative z-20"
+      style={{
+        background: "rgba(255,255,255,0.95)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(99,102,241,0.1)",
+        boxShadow: "0 1px 20px rgba(0,0,0,0.06)",
+      }}
+    >
+      {/* Mobile hamburger */}
       <button
         onClick={onMenuClick}
-        className="md:hidden p-2 -ml-2"
+        className="md:hidden p-2 -ml-1 rounded-xl transition-all duration-200 cursor-pointer"
         aria-label="Open menu"
+        style={{ color: "#64748b" }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.background =
+            "rgba(99,102,241,0.08)";
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.background =
+            "transparent";
+        }}
       >
-        <HamburgerIcon className="w-6 h-6" />
+        <HamburgerIcon className="w-5 h-5" />
       </button>
 
-      <div className="relative flex-1 md:w-1/2 max-w-2xl">
-        <Suspense fallback={<div className="w-full h-10 bg-gray-100 rounded-md animate-pulse" />}>
+      {/* Search */}
+      <div className="relative flex-1 md:w-1/2 max-w-lg">
+        <Suspense
+          fallback={
+            <div
+              className="w-full h-10 rounded-xl animate-pulse"
+              style={{ background: "rgba(99,102,241,0.06)" }}
+            />
+          }
+        >
           <GlobalSearch />
         </Suspense>
       </div>
 
-      <div className="flex items-center gap-3 md:gap-6">
+      {/* Right: Notifications + User */}
+      <div className="flex items-center gap-2 md:gap-3">
         {loading ? (
-          <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+          <div
+            className="w-9 h-9 rounded-full animate-pulse"
+            style={{ background: "rgba(0,0,0,0.06)" }}
+          />
         ) : (
           <NotificationDropdown alerts={alerts} />
         )}
 
         {loading ? (
-          <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse border border-gray-300" />
+          <div
+            className="w-10 h-10 rounded-full animate-pulse"
+            style={{ background: "rgba(0,0,0,0.06)" }}
+          />
         ) : user ? (
           <UserDropdown user={user} />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-gray-200" />
+          <div
+            className="w-10 h-10 rounded-full"
+            style={{ background: "rgba(0,0,0,0.06)" }}
+          />
         )}
       </div>
     </div>

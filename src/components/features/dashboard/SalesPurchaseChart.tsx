@@ -43,9 +43,12 @@ export default function SalesPurchaseChart({ data }: { data: ChartData[] }) {
               dataKey="name" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: "#6B7280", fontSize: 12 }} 
-              dy={10}
-              interval={0} 
+              tick={{ fill: "#6B7280", fontSize: 11 }} 
+              dy={4}
+              angle={-35}
+              textAnchor="end"
+              height={50}
+              interval={"preserveStartEnd"}
             />
             <YAxis 
               axisLine={false} 

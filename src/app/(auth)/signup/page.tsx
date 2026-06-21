@@ -8,19 +8,8 @@ import SignUpForm from "@/components/features/auth/SignUpForm";
 export default function SignUpPage() {
   return (
     <AuthFormCard
-      header={
-        <AuthHeader
-          title="Create an account"
-          subtitle="Start your 30-day free trial."
-        />
-      }
-      footer={
-        <AuthFooter
-          description="Already have an account?"
-          linkText="Log In"
-          linkHref="/login"
-        />
-      }
+      header={<AuthHeader titleKey="signup" />}
+      footer={<AuthFooter type="signup" />}
     >
       <SignUpForm />
     </AuthFormCard>
