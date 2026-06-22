@@ -57,6 +57,13 @@ export default function DashboardClientWrapper({
           router.refresh();
         }
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "suppliers" },
+        () => {
+          router.refresh();
+        }
+      )
       .subscribe();
 
     return () => {

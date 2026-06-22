@@ -54,6 +54,10 @@ export interface Supplier {
   purchase_link: string;
   /** The ID of the user who created/owns this supplier record. */
   user_id: string;
+  /** Optional status of the supplier portal account */
+  status?: string;
+  /** Optional email of the supplier portal account */
+  email?: string;
 }
 
 /**

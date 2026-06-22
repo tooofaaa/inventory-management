@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useCallback } from "react";
+import { createBrowserClient } from "@supabase/ssr";
 import { HamburgerIcon } from "@/components/icons";
 import GlobalSearch from "@/components/ui/GlobalSearch";
 import UserDropdown from "@/components/features/topbar/UserDropdown";
@@ -8,6 +9,7 @@ import NotificationDropdown from "@/components/features/topbar/NotificationDropd
 import { User } from "@/lib/types";
 import { getProfile } from "@/lib/actions/profile";
 import { getLowStockNotifications } from "@/lib/actions/notifications";
+import { getPendingSuppliers } from "@/lib/actions/suppliers";
 import { StockAlert } from "@/lib/types";
 
 interface TopbarProps {
@@ -17,18 +19,30 @@ interface TopbarProps {
 export default function Topbar({ onMenuClick }: TopbarProps) {
   const [user, setUser] = useState<User | null>(null);
   const [alerts, setAlerts] = useState<StockAlert[]>([]);
+  const [pendingSuppliers, setPendingSuppliers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const refreshPendingSuppliers = useCallback(async () => {
+    try {
+      const data = await getPendingSuppliers();
+      setPendingSuppliers(data || []);
+    } catch (error) {
+      console.error("Failed to refresh pending suppliers:", error);
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [userData, notificationData] = await Promise.all([
+        const [userData, notificationData, pendingSupplierData] = await Promise.all([
           getProfile(),
           getLowStockNotifications(),
+          getPendingSuppliers(),
         ]);
 
         setUser(userData);
         setAlerts(notificationData);
+        setPendingSuppliers(pendingSupplierData || []);
       } catch (error) {
         console.error("Failed to fetch topbar data:", error);
       } finally {
@@ -38,6 +52,36 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
     fetchData();
   }, []);
+
+  // Real-time listener: when a supplier registers or status changes, refresh the pending count
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    const channel = supabase
+      .channel("topbar-suppliers-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "suppliers" },
+        () => {
+          refreshPendingSuppliers();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "suppliers" },
+        () => {
+          refreshPendingSuppliers();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refreshPendingSuppliers]);
 
   return (
     <div
@@ -89,7 +133,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             style={{ background: "rgba(0,0,0,0.06)" }}
           />
         ) : (
-          <NotificationDropdown alerts={alerts} />
+          <NotificationDropdown alerts={alerts} pendingSuppliers={pendingSuppliers} />
         )}
 
         {loading ? (

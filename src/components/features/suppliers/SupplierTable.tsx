@@ -11,11 +11,14 @@ import { Supplier } from "@/lib/types";
 interface SupplierTableProps {
   refreshKey: number;
   onOrderChange: () => void;
+  /** When set, only suppliers with this status are shown */
+  statusFilter?: "Pending" | "Approved" | "Declined";
 }
 
 export default function SupplierTable({
   refreshKey,
   onOrderChange,
+  statusFilter,
 }: SupplierTableProps) {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -30,7 +33,8 @@ export default function SupplierTable({
         const res = await getPaginatedSuppliersByUser(
           currentPage,
           PAGE_SIZE,
-          searchQuery
+          searchQuery,
+          statusFilter
         );
         setSuppliers(res.data);
         setTotalPages(Math.ceil(res.total / PAGE_SIZE));
@@ -39,7 +43,12 @@ export default function SupplierTable({
       }
     };
     fetchData();
-  }, [currentPage, refreshKey, searchQuery]);
+  }, [currentPage, refreshKey, searchQuery, statusFilter]);
+
+  const emptyMessage =
+    statusFilter === "Pending"
+      ? "No pending supplier registrations."
+      : "No suppliers found.";
 
   return (
     <div className="pt-2 overflow-hidden">
@@ -51,6 +60,7 @@ export default function SupplierTable({
               <th className="py-2 px-4">Address</th>
               <th className="py-2 px-4">Contact Number</th>
               <th className="py-2 px-4">Purchase Link</th>
+              <th className="py-2 px-4">Status</th>
               <th className="py-2 px-4">Action</th>
             </tr>
           </thead>
@@ -65,10 +75,10 @@ export default function SupplierTable({
             {suppliers.length === 0 && (
               <tr>
                 <td
-                  colSpan={4}
+                  colSpan={6}
                   className="py-8 text-center text-gray-500 italic"
                 >
-                  No suppliers found.
+                  {emptyMessage}
                 </td>
               </tr>
             )}

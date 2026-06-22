@@ -129,7 +129,8 @@ export async function deleteSupplier(id: string): Promise<FormState> {
 export async function getPaginatedSuppliersByUser(
   page: number,
   pageSize: number,
-  searchQuery?: string
+  searchQuery?: string,
+  statusFilter?: "Pending" | "Approved" | "Declined"
 ) {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
@@ -145,9 +146,62 @@ export async function getPaginatedSuppliersByUser(
     query = query.ilike("supplier_name", `%${searchQuery}%`);
   }
 
+  if (statusFilter) {
+    query = query.eq("status", statusFilter);
+  }
+
   const { data, error, count } = await query;
 
   if (error) throw error;
 
   return { data, total: count ?? 0 };
+}
+
+export async function getPendingSuppliers() {
+  const supabase = await createClientServer();
+  const { data, error } = await supabase
+    .from("suppliers")
+    .select("id, supplier_name, email, contact_number, address, created_at")
+    .eq("status", "Pending")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching pending suppliers:", error.message);
+    return [];
+  }
+  return data;
+}
+
+export async function approveSupplier(id: string): Promise<FormState> {
+  const supabase = await createClientServer();
+  const { error } = await supabase
+    .from("suppliers")
+    .update({ status: "Approved" })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error approving supplier:", error.message);
+    return { success: false, message: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/suppliers");
+  return { success: true, message: "Supplier approved successfully." };
+}
+
+export async function declineSupplier(id: string): Promise<FormState> {
+  const supabase = await createClientServer();
+  const { error } = await supabase
+    .from("suppliers")
+    .update({ status: "Declined" })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error declining supplier:", error.message);
+    return { success: false, message: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/suppliers");
+  return { success: true, message: "Supplier registration declined." };
 }

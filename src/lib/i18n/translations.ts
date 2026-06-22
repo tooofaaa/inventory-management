@@ -69,6 +69,9 @@ export const translations = {
       viewAllInventory: "View All Inventory",
       accountSettings: "Account Settings",
       logOut: "Log Out",
+      pendingSuppliers: "Pending Suppliers",
+      supplierNeedsApproval: "Supplier needs approval",
+      viewAllSuppliers: "View Pending Suppliers",
     },
 
     // Dashboard
@@ -169,6 +172,9 @@ export const translations = {
       viewAllInventory: "عرض كل المخزون",
       accountSettings: "إعدادات الحساب",
       logOut: "تسجيل الخروج",
+      pendingSuppliers: "موردون معلقون",
+      supplierNeedsApproval: "المورد يحتاج إلى موافقة",
+      viewAllSuppliers: "عرض الموردين المعلقين",
     },
 
     // Dashboard

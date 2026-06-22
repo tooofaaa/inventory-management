@@ -9,12 +9,14 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function NotificationDropdown({
   alerts,
+  pendingSuppliers = [],
 }: {
   alerts: StockAlert[];
+  pendingSuppliers?: any[];
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const notifCount = alerts.length;
+  const notifCount = alerts.length + pendingSuppliers.length;
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -83,23 +85,37 @@ export default function NotificationDropdown({
             <h3 className="font-bold text-gray-900 text-sm">
               {t.topbar.notifications}
             </h3>
-            {notifCount > 0 && (
-              <span
-                className="text-xs px-2.5 py-1 rounded-full font-semibold"
-                style={{
-                  background: "rgba(239,68,68,0.1)",
-                  color: "#ef4444",
-                  border: "1px solid rgba(239,68,68,0.2)",
-                }}
-              >
-                {notifCount} {t.topbar.lowStock}
-              </span>
-            )}
+            <div className="flex gap-1.5">
+              {pendingSuppliers.length > 0 && (
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                  style={{
+                    background: "rgba(245,158,11,0.1)",
+                    color: "#d97706",
+                    border: "1px solid rgba(245,158,11,0.25)",
+                  }}
+                >
+                  {pendingSuppliers.length} {t.topbar.pendingSuppliers}
+                </span>
+              )}
+              {alerts.length > 0 && (
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                  style={{
+                    background: "rgba(239,68,68,0.1)",
+                    color: "#ef4444",
+                    border: "1px solid rgba(239,68,68,0.2)",
+                  }}
+                >
+                  {alerts.length} {t.topbar.lowStock}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Content */}
-          <div className="max-h-80 overflow-y-auto">
-            {alerts.length === 0 ? (
+          <div className="max-h-96 overflow-y-auto">
+            {alerts.length === 0 && pendingSuppliers.length === 0 ? (
               <div className="p-8 text-center">
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
@@ -129,58 +145,156 @@ export default function NotificationDropdown({
               </div>
             ) : (
               <ul>
-                {alerts.map((item) => (
-                  <li
-                    key={item.id}
-                    style={{ borderBottom: "1px solid rgba(0,0,0,0.04)" }}
-                  >
-                    <Link
-                      href={`/product/${item.id}`}
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-start gap-3 p-3 transition-colors duration-150"
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLAnchorElement).style.background =
-                          "rgba(99,102,241,0.04)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLAnchorElement).style.background =
-                          "transparent";
-                      }}
+                {/* Pending Suppliers Section */}
+                {pendingSuppliers.length > 0 && (
+                  <>
+                    <li
+                      className="px-3 pt-3 pb-1.5"
+                      style={{ borderBottom: "1px solid rgba(245,158,11,0.1)" }}
                     >
-                      <div
-                        className="w-10 h-10 rounded-xl flex-shrink-0 overflow-hidden relative"
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md"
+                          style={{
+                            background: "rgba(245,158,11,0.1)",
+                            color: "#d97706",
+                          }}
+                        >
+                          ⚠ {t.topbar.pendingSuppliers}
+                        </span>
+                      </div>
+                    </li>
+                    {pendingSuppliers.map((item) => (
+                      <li
+                        key={`supplier-${item.id}`}
+                        style={{ borderBottom: "1px solid rgba(245,158,11,0.08)" }}
+                      >
+                        <Link
+                          href="/suppliers?tab=pending"
+                          onClick={() => setIsOpen(false)}
+                          className="flex items-start gap-3 p-3 transition-colors duration-150"
+                          onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLAnchorElement).style.background =
+                              "rgba(245,158,11,0.04)";
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLAnchorElement).style.background =
+                              "transparent";
+                          }}
+                        >
+                          <div
+                            className="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center text-lg"
+                            style={{
+                              background: "rgba(245,158,11,0.1)",
+                              border: "1px solid rgba(245,158,11,0.2)",
+                            }}
+                          >
+                            👤
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-800 line-clamp-1">
+                              {item.supplier_name}
+                            </p>
+                            <p
+                              className="text-xs font-medium mt-0.5"
+                              style={{ color: "#d97706" }}
+                            >
+                              {t.topbar.supplierNeedsApproval}
+                            </p>
+                            {item.email && (
+                              <p className="text-xs text-gray-400 mt-0.5 truncate">
+                                {item.email}
+                              </p>
+                            )}
+                          </div>
+                          {/* Action required badge */}
+                          <span
+                            className="flex-shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide"
+                            style={{
+                              background: "rgba(245,158,11,0.15)",
+                              color: "#d97706",
+                              border: "1px solid rgba(245,158,11,0.3)",
+                            }}
+                          >
+                            Action
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </>
+                )}
+
+                {/* Low Stock Section */}
+                {alerts.length > 0 && (
+                  <>
+                    <li
+                      className="px-3 pt-3 pb-1.5"
+                      style={{ borderBottom: "1px solid rgba(239,68,68,0.1)" }}
+                    >
+                      <span
+                        className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md"
                         style={{
-                          background: "rgba(0,0,0,0.04)",
-                          border: "1px solid rgba(0,0,0,0.06)",
+                          background: "rgba(239,68,68,0.08)",
+                          color: "#ef4444",
                         }}
                       >
-                        {item.product_image ? (
-                          <Image
-                            src={item.product_image}
-                            alt={item.product_name}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
-                            IMG
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-800 line-clamp-1">
-                          {item.product_name}
-                        </p>
-                        <p
-                          className="text-xs font-medium mt-0.5"
-                          style={{ color: "#ef4444" }}
+                        📦 {t.topbar.lowStock}
+                      </span>
+                    </li>
+                    {alerts.map((item) => (
+                      <li
+                        key={item.id}
+                        style={{ borderBottom: "1px solid rgba(0,0,0,0.04)" }}
+                      >
+                        <Link
+                          href={`/product/${item.id}`}
+                          onClick={() => setIsOpen(false)}
+                          className="flex items-start gap-3 p-3 transition-colors duration-150"
+                          onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLAnchorElement).style.background =
+                              "rgba(99,102,241,0.04)";
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLAnchorElement).style.background =
+                              "transparent";
+                          }}
                         >
-                          Only {item.amount_stock} left in stock
-                        </p>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
+                          <div
+                            className="w-10 h-10 rounded-xl flex-shrink-0 overflow-hidden relative"
+                            style={{
+                              background: "rgba(0,0,0,0.04)",
+                              border: "1px solid rgba(0,0,0,0.06)",
+                            }}
+                          >
+                            {item.product_image ? (
+                              <Image
+                                src={item.product_image}
+                                alt={item.product_name}
+                                fill
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                                IMG
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-800 line-clamp-1">
+                              {item.product_name}
+                            </p>
+                            <p
+                              className="text-xs font-medium mt-0.5"
+                              style={{ color: "#ef4444" }}
+                            >
+                              Only {item.amount_stock} left in stock
+                            </p>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </>
+                )}
               </ul>
             )}
           </div>
@@ -188,29 +302,53 @@ export default function NotificationDropdown({
           {/* Footer */}
           {notifCount > 0 && (
             <div
-              className="p-3"
+              className="p-3 flex flex-col gap-2"
               style={{ borderTop: "1px solid rgba(99,102,241,0.08)" }}
             >
-              <Link
-                href="/inventory"
-                onClick={() => setIsOpen(false)}
-                className="block text-center text-xs font-semibold py-2 px-4 rounded-xl transition-all duration-200"
-                style={{
-                  color: "#6366f1",
-                  background: "rgba(99,102,241,0.06)",
-                  border: "1px solid rgba(99,102,241,0.12)",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.background =
-                    "rgba(99,102,241,0.12)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.background =
-                    "rgba(99,102,241,0.06)";
-                }}
-              >
-                {t.topbar.viewAllInventory}
-              </Link>
+              {pendingSuppliers.length > 0 && (
+                <Link
+                  href="/suppliers?tab=pending"
+                  onClick={() => setIsOpen(false)}
+                  className="block text-center text-xs font-semibold py-2 px-4 rounded-xl transition-all duration-200"
+                  style={{
+                    color: "#d97706",
+                    background: "rgba(245,158,11,0.06)",
+                    border: "1px solid rgba(245,158,11,0.2)",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.background =
+                      "rgba(245,158,11,0.12)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.background =
+                      "rgba(245,158,11,0.06)";
+                  }}
+                >
+                  {t.topbar.viewAllSuppliers}
+                </Link>
+              )}
+              {alerts.length > 0 && (
+                <Link
+                  href="/inventory"
+                  onClick={() => setIsOpen(false)}
+                  className="block text-center text-xs font-semibold py-2 px-4 rounded-xl transition-all duration-200"
+                  style={{
+                    color: "#6366f1",
+                    background: "rgba(99,102,241,0.06)",
+                    border: "1px solid rgba(99,102,241,0.12)",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.background =
+                      "rgba(99,102,241,0.12)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.background =
+                      "rgba(99,102,241,0.06)";
+                  }}
+                >
+                  {t.topbar.viewAllInventory}
+                </Link>
+              )}
             </div>
           )}
         </div>
