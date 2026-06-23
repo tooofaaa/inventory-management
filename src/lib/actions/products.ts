@@ -441,3 +441,68 @@ export async function getAllProductsForSelect() {
 
   return data;
 }
+
+export async function getSupplierCatalogProducts() {
+  const supabase = await createClientServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  // Get products that have a supplier_id but do not belong to the current user
+  const { data, error } = await supabase
+    .from("products")
+    .select(`
+      id,
+      product_name,
+      product_type,
+      product_category,
+      buy_price,
+      product_image,
+      supplier_id,
+      supplier:suppliers ( supplier_name )
+    `)
+    .neq("user_id", user.id)
+    .not("supplier_id", "is", null);
+
+  if (error) {
+    console.error("Error fetching supplier catalog products:", error.message);
+    return [];
+  }
+
+  return data;
+}
+
+export async function importSupplierProduct(productId: number): Promise<{ success: boolean; message: string }> {
+  const supabase = await createClientServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "Not authenticated" };
+
+  const { data: product, error: fetchError } = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", productId)
+    .single();
+
+  if (fetchError || !product) {
+    return { success: false, message: "Could not fetch product details." };
+  }
+
+  const { error: insertError } = await supabase.from("products").insert({
+    product_name: product.product_name,
+    product_type: product.product_type,
+    product_category: product.product_category,
+    amount_stock: 0, // start with 0 stock
+    buy_price: product.buy_price,
+    sell_price: product.sell_price, // optionally they can update this later
+    product_image: product.product_image,
+    user_id: user.id,
+    supplier_id: product.supplier_id,
+  });
+
+  if (insertError) {
+    console.error("Failed to import product:", insertError.message);
+    return { success: false, message: `Failed to import product: ${insertError.message}` };
+  }
+
+  revalidatePath("/inventory");
+  return { success: true, message: "Product imported to inventory successfully!" };
+}

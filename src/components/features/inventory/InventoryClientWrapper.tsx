@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import AddProduct from "@/components/features/inventory/AddProduct";
+import ImportProductModal from "@/components/features/inventory/ImportProductModal";
 import ProductTable from "@/components/features/inventory/ProductTable";
 import FilterDropdown, { DropdownOption } from "@/components/ui/FilterDropdown";
 import { FilterIcon } from "@/components/icons/FilterIcon";
@@ -56,7 +57,8 @@ export default function InventoryClientWrapper({
     <div className="bg-white shadow-md p-4 rounded-md">
       <div className="flex flex-row justify-between items-center">
         <h1 className="sm:text-lg tracking-wide">Products</h1>
-        <div className="flex flex-row gap-4 tracking-wide">
+        <div className="flex flex-row gap-4 tracking-wide items-center">
+          <ImportProductModal onImportComplete={triggerRefresh} />
           <AddProduct suppliers={suppliers} onOrderChange={triggerRefresh} />
           <FilterDropdown
             label="Filters"

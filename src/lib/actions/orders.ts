@@ -221,3 +221,51 @@ export async function getPaginatedOrders(
 
   return { data, total: count ?? 0 };
 }
+
+export async function quickReorderProduct(productId: string): Promise<{ success: boolean; message: string }> {
+  const supabase = await createClientServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "Not authenticated" };
+
+  const { data: product, error: fetchError } = await supabase
+    .from("products")
+    .select("id, buy_price, supplier_id")
+    .eq("id", parseInt(productId, 10))
+    .single();
+
+  if (fetchError || !product) {
+    return { success: false, message: "Could not find product details." };
+  }
+
+  const quantity = 50; // default reorder amount
+  const cost_per_item = product.buy_price;
+  const total_cost = quantity * cost_per_item;
+
+  const expected_delivery_date = new Date();
+  expected_delivery_date.setDate(expected_delivery_date.getDate() + 7); // 7 days from now
+
+  const items = [{
+    product_id: product.id,
+    quantity,
+    cost_per_item,
+  }];
+
+  const { data: newOrderId, error } = await supabase.rpc("create_new_purchase_order", {
+    p_supplier_id: product.supplier_id,
+    p_status: "Pending",
+    p_expected_delivery_date: expected_delivery_date.toISOString().split('T')[0],
+    p_total_cost: total_cost,
+    p_user_id: user.id,
+    p_items: items,
+  });
+
+  if (error) {
+    return { success: false, message: `Failed to reorder: ${error.message}` };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/inventory");
+  revalidatePath("/orders");
+
+  return { success: true, message: `Successfully reordered 50 units (PO #${newOrderId})` };
+}
