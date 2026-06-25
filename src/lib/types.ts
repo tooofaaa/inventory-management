@@ -58,6 +58,34 @@ export interface Supplier {
   status?: string;
   /** Optional email of the supplier portal account */
   email?: string;
+  /** Reserved space in cubic meters */
+  reserved_space_m3?: number;
+  /** Cost for the reserved space */
+  reservation_cost?: number;
+  /** The date the reservation starts */
+  reservation_start_date?: string;
+  /** The date the reservation ends */
+  reservation_end_date?: string;
+  /** Period for the reservation charge (e.g., Weekly, Monthly, Yearly) */
+  reservation_period?: string;
+  /** Date when the next automatic deduction is scheduled */
+  next_deduction_date?: string;
+  /** Flag indicating if the supplier failed to pay the last charge due to insufficient funds */
+  has_insufficient_funds?: boolean;
+  /** Current balance based on credits and charges (joined from view) */
+  balance?: number;
+}
+
+/**
+ * Represents a transaction (credit or charge) on a supplier's account.
+ */
+export interface SupplierTransaction {
+  id: number;
+  supplier_id: number;
+  transaction_type: 'CREDIT' | 'CHARGE';
+  amount: number;
+  description: string;
+  created_at: string;
 }
 
 /**

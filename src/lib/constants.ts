@@ -50,6 +50,11 @@ export const MAIN_NAV_LINKS: NavLink[] = [
     icon: SuppliersIcon,
   },
   {
+    href: "/finance",
+    label: "Finance",
+    icon: ReportsIcon,
+  },
+  {
     href: "/reports",
     label: "Reports",
     icon: ReportsIcon,
