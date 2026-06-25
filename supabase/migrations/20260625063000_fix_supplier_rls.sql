@@ -5,11 +5,13 @@ DROP POLICY IF EXISTS "Users and admins can update suppliers" ON public.supplier
 DROP POLICY IF EXISTS "Users and admins can delete suppliers" ON public.suppliers;
 
 -- 2. Create simplified, robust update and delete policies
+DROP POLICY IF EXISTS "Allow authenticated users to update suppliers" ON public.suppliers;
 CREATE POLICY "Allow authenticated users to update suppliers" ON public.suppliers
 FOR UPDATE TO authenticated
 USING (true)
 WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Allow authenticated users to delete suppliers" ON public.suppliers;
 CREATE POLICY "Allow authenticated users to delete suppliers" ON public.suppliers
 FOR DELETE TO authenticated
 USING (true);
