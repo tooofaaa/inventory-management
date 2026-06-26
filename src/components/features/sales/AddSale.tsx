@@ -108,7 +108,28 @@ export default function AddSale({
     } | ${formatCurrency(p.sell_price)}`,
   }));
 
-  const totalAmount = items.reduce(
+  const tempProduct = products.find((p) => String(p.id) === tempProductId);
+  const tempQtyVal = parseInt(tempQty) || 0;
+  const tempPriceVal = parseFloat(tempPrice) || 0;
+  const hasValidTempItem = !!(
+    tempProduct &&
+    tempQtyVal > 0 &&
+    tempQtyVal <= tempProduct.amount_stock &&
+    !isNaN(tempPriceVal) &&
+    tempPriceVal >= 0
+  );
+
+  const activeItems = [...items];
+  if (hasValidTempItem && tempProduct) {
+    activeItems.push({
+      product_id: String(tempProduct.id),
+      product_name: tempProduct.product_name,
+      quantity: tempQtyVal,
+      sell_price: tempPriceVal,
+    });
+  }
+
+  const totalAmount = activeItems.reduce(
     (acc, item) => acc + item.quantity * item.sell_price,
     0
   );
@@ -211,7 +232,7 @@ export default function AddSale({
             <Button
               type="submit"
               form="sale-form"
-              disabled={isPending || items.length === 0}
+              disabled={isPending || activeItems.length === 0}
             >
               {isPending
                 ? "Processing..."
@@ -224,9 +245,37 @@ export default function AddSale({
           id="sale-form"
           ref={formRef}
           action={formAction}
+          onSubmit={(e) => {
+            if (tempProductId) {
+              const qty = parseInt(tempQty);
+              const price = parseFloat(tempPrice);
+              const product = products.find((p) => String(p.id) === tempProductId);
+
+              if (!product || qty <= 0) {
+                e.preventDefault();
+                alert("Invalid product or quantity");
+                return;
+              }
+              if (qty > product.amount_stock) {
+                e.preventDefault();
+                alert(`Stok tidak cukup! Sisa: ${product.amount_stock}`);
+                return;
+              }
+              if (isNaN(price) || price < 0) {
+                e.preventDefault();
+                alert("Invalid price");
+                return;
+              }
+            }
+            if (activeItems.length === 0) {
+              e.preventDefault();
+              alert("Cart is empty.");
+              return;
+            }
+          }}
           className="flex flex-col gap-5"
         >
-          <input type="hidden" name="items" value={JSON.stringify(items)} />
+          <input type="hidden" name="items" value={JSON.stringify(activeItems)} />
           <SearchableSelect
             label="Customer"
             name="customer_id"

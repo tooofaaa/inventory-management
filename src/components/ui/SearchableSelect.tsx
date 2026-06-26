@@ -33,6 +33,11 @@ export default function SearchableSelect({
   const [isOpen, setIsOpen] = useState(false);
   // const [selectedValue, setSelectedValue] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const validOption = options.find((o) => o.id === value);
+    setQuery(validOption ? validOption.main_text : "");
+  }, [value, options]);
   const filteredOptions =
     query === ""
       ? options
