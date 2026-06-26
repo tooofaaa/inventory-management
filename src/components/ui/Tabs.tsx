@@ -21,7 +21,7 @@ export default function Tabs({
 }: TabsProps) {
   return (
     <div>
-      <div className="flex flex-row items-center justify-start gap-8 mt-3 border-b border-gray-300">
+      <div className="flex flex-row items-center justify-between sm:justify-start gap-8 mt-3 border-b border-gray-300">
         {["overview", "purchases", "history"].map((tab) => (
           <button
             key={tab}

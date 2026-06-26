@@ -1,6 +1,7 @@
 "use client";
 
 import SupplierTable from "@/components/features/suppliers/SupplierTable";
+import AddSupplier from "@/components/features/suppliers/AddSupplier";
 import { useState, Suspense, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getPendingSuppliers } from "@/lib/actions/suppliers";
@@ -76,6 +77,9 @@ function SuppliersContent() {
         {/* Header */}
         <div className="flex flex-row justify-between items-center gap-3 mb-4">
           <h1 className="text-lg tracking-wide font-semibold">Suppliers</h1>
+          <div className="flex flex-row gap-4 tracking-wide">
+            <AddSupplier onOrderChange={triggerRefresh} />
+          </div>
         </div>
 
         {/* Pending Approvals Banner — shown when there are pending suppliers */}
