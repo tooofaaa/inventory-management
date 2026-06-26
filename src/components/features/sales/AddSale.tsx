@@ -365,6 +365,14 @@ export default function AddSale({
                 onChange={(e) => setTempQty(e.target.value)}
                 disabled={isItemFormDisabled}
               />
+              {tempProductId && (
+                <div className="flex justify-between items-center text-sm font-medium text-gray-700 bg-indigo-50/50 p-2.5 rounded-lg border border-indigo-100/50 my-1">
+                  <span className="text-gray-500">Item Total:</span>
+                  <span className="text-base font-bold text-indigo-600">
+                    {formatCurrency((parseFloat(tempPrice) || 0) * (parseInt(tempQty) || 0))}
+                  </span>
+                </div>
+              )}
               <Button
                 type="button"
                 variant="secondary"
