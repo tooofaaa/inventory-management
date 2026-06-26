@@ -152,6 +152,8 @@ export type ProductOption = {
   amount_stock: number;
   /** The ID of the primary supplier. */
   supplier_id: number;
+  /** The category of the product. */
+  product_category: string;
 };
 
 // -----------------------------------------------------------------------------------------------------------------------------

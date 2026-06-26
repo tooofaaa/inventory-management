@@ -5,7 +5,7 @@ import AddSale from "./AddSale";
 import SaleTable from "./SaleTable";
 import FilterDropdown, { DropdownOption } from "@/components/ui/FilterDropdown";
 import { FilterIcon } from "@/components/icons";
-import { ProductOption, CustomerOption } from "@/lib/types";
+import { ProductOption, CustomerOption, Supplier } from "@/lib/types";
 import { PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/constants";
 
 const statusOptions: DropdownOption[] = [
@@ -21,9 +21,11 @@ const methodOptions: DropdownOption[] = [
 export default function SaleClientWrapper({
   products,
   customers,
+  suppliers,
 }: {
   products: ProductOption[];
   customers: CustomerOption[];
+  suppliers: Supplier[];
 }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const triggerRefresh = () => {
@@ -42,6 +44,7 @@ export default function SaleClientWrapper({
           <AddSale
             products={products}
             customers={customers}
+            suppliers={suppliers}
             onSaleChange={triggerRefresh}
           />
           <FilterDropdown

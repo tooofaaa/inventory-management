@@ -1,14 +1,17 @@
 import SaleClientWrapper from "@/components/features/sales/SaleClientWrapper";
 import OverallSales from "@/components/features/sales/OverallSales";
+import { Supplier } from "@/lib/types";
 import { getAllProductsForSelect } from "@/lib/actions/products";
 import { getAllCustomers } from "@/lib/actions/customers";
 import { getOverallSalesStats } from "@/lib/actions/sales";
+import { getAllSuppliers } from "@/lib/actions/suppliers";
 
 export default async function SalesPage() {
-  const [products, customers, stats] = await Promise.all([
+  const [products, customers, stats, suppliers] = await Promise.all([
     getAllProductsForSelect(),
     getAllCustomers(),
     getOverallSalesStats(),
+    getAllSuppliers(),
   ]);
 
   const salesStats = stats || {
@@ -26,7 +29,7 @@ export default async function SalesPage() {
         totalTransactions={salesStats.total_transactions}
         todayRevenue={salesStats.today_revenue}
       />
-      <SaleClientWrapper products={products} customers={customers} />
+      <SaleClientWrapper products={products} customers={customers} suppliers={suppliers as unknown as Supplier[]} />
     </div>
   );
 }

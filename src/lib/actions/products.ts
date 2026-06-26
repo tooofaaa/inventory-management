@@ -430,7 +430,7 @@ export async function getAllProductsForSelect() {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, product_name, product_type, buy_price, sell_price, amount_stock, supplier_id"
+      "id, product_name, product_type, buy_price, sell_price, amount_stock, supplier_id, product_category"
     )
     .order("product_name");
 

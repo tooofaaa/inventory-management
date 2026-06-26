@@ -23,6 +23,7 @@ import {
   ProductOption,
   CustomerOption,
   SaleItem,
+  Supplier,
 } from "@/lib/types";
 import { PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/constants";
 
@@ -31,12 +32,14 @@ const initialState: FormState = { success: false, message: "" };
 interface AddSaleProps {
   products: ProductOption[];
   customers: CustomerOption[];
+  suppliers?: Supplier[];
   onSaleChange: () => void;
 }
 
 export default function AddSale({
   products = [],
   customers = [],
+  suppliers = [],
   onSaleChange,
 }: AddSaleProps) {
   const [showForm, setShowForm] = useState(false);
@@ -50,6 +53,8 @@ export default function AddSale({
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(
     "1"
   );
+  const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [saleDate, setSaleDate] = useState(
     new Date().toISOString().split("T")[0]
   );
@@ -75,7 +80,27 @@ export default function AddSale({
     secondary_text: String(formatDisplayPhoneNumber(c.contact_number)),
   }));
 
-  const productOptions = (products || []).map((p) => ({
+  const supplierOptions = (suppliers || []).map((s) => ({
+    id: String(s.id),
+    main_text: s.supplier_name,
+    secondary_text: s.contact_number ? String(formatDisplayPhoneNumber(s.contact_number)) : "",
+  }));
+
+  const categoryOptions = Array.from(
+    new Set(
+      (products || [])
+        .map((p) => p.product_category)
+        .filter(Boolean)
+    )
+  );
+
+  const filteredProducts = (products || []).filter((p) => {
+    const matchesSupplier = !selectedSupplierId || String(p.supplier_id) === selectedSupplierId;
+    const matchesCategory = !selectedCategory || p.product_category === selectedCategory;
+    return matchesSupplier && matchesCategory;
+  });
+
+  const productOptions = filteredProducts.map((p) => ({
     id: String(p.id),
     main_text: p.product_name,
     secondary_text: `Type: ${p.product_type} | Stok: ${
@@ -94,6 +119,8 @@ export default function AddSale({
     setPaymentStatus("Paid");
     setPaymentMethod("Cash");
     setSelectedCustomerId("1");
+    setSelectedSupplierId(null);
+    setSelectedCategory(null);
     setSaleDate(new Date().toISOString().split("T")[0]);
 
     setTempProductId(null);
@@ -210,6 +237,34 @@ export default function AddSale({
             disabled={isHeaderLocked}
             required
           />
+          <SearchableSelect
+            label="Provider"
+            name="supplier_id"
+            options={supplierOptions}
+            onSelect={setSelectedSupplierId}
+            value={selectedSupplierId}
+            placeholder="Search Provider..."
+            disabled={isHeaderLocked}
+          />
+          <LabeledSelect
+            label="Category"
+            id="product_category"
+            value={selectedCategory || ""}
+            onChange={(e) => setSelectedCategory(e.target.value || null)}
+            className={
+              isHeaderLocked
+                ? "bg-gray-100 text-gray-500 cursor-not-allowed pointer-events-none"
+                : ""
+            }
+            disabled={isHeaderLocked}
+          >
+            <option value="">Select Category...</option>
+            {categoryOptions.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </LabeledSelect>
           <LabeledInput
             label="Date"
             id="sale_date"
