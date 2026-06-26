@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClientServer } from "@/lib/supabase/server";
-import { FormState, SaleItemState, SalesStatsData } from "@/lib/types";
+import { FormState, SaleItem, SalesStatsData } from "@/lib/types";
 
 export async function insertSale(
   previousState: FormState,
@@ -21,11 +21,12 @@ export async function insertSale(
   const notes = formData.get("notes") as string;
   const itemsJSON = formData.get("items") as string;
 
-  let items: { product_id: number; quantity: number }[];
+  let items: { product_id: number; quantity: number; sell_price: number }[];
   try {
-    items = JSON.parse(itemsJSON).map((item: SaleItemState) => ({
+    items = JSON.parse(itemsJSON).map((item: SaleItem) => ({
       product_id: parseInt(item.product_id, 10),
-      quantity: parseInt(item.quantity, 10),
+      quantity: item.quantity,
+      sell_price: item.sell_price,
     }));
     if (items.length === 0)
       return { success: false, message: "Cart is empty." };

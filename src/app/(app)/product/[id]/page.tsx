@@ -3,7 +3,7 @@ import ProductDetailView from "@/components/features/product/ProductDetailView";
 import { redirect } from "next/navigation";
 
 interface ProductPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
