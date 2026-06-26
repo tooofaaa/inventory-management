@@ -54,11 +54,6 @@ export const MAIN_NAV_LINKS: NavLink[] = [
     label: "Finance",
     icon: ReportsIcon,
   },
-  {
-    href: "/reports",
-    label: "Reports",
-    icon: ReportsIcon,
-  },
 ];
 
 export const FOOTER_NAV_LINKS: NavLink[] = [

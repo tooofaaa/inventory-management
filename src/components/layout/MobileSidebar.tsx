@@ -30,7 +30,6 @@ export default function MobileSidebar({
     "/orders": navLabels.orders,
     "/customers": navLabels.customers,
     "/suppliers": navLabels.suppliers,
-    "/reports": navLabels.reports,
     "/settings": navLabels.settings,
   };
 
@@ -60,7 +59,7 @@ export default function MobileSidebar({
         <div className="h-full flex flex-col overflow-y-auto p-5">
           <div className="flex flex-col flex-grow">
             {/* Header: Logo + Close */}
-            <div className="flex items-center justify-between pb-6">
+            <div className="flex items-center justify-between pb-4">
               <div className="flex items-center gap-3">
                 <div
                   className="p-1.5 rounded-xl flex-shrink-0"
@@ -102,7 +101,7 @@ export default function MobileSidebar({
             />
 
             {/* Main nav */}
-            <nav className="flex flex-col gap-1">
+            <nav className="flex flex-col gap-2">
               {MAIN_NAV_LINKS.map((link) => {
                 const Icon = link.icon;
                 return (
@@ -118,10 +117,10 @@ export default function MobileSidebar({
           </div>
 
           {/* Footer nav */}
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             {/* Divider */}
             <div
-              className="mb-3"
+              className="mb-4"
               style={{ height: "1px", background: "rgba(255,255,255,0.07)" }}
             />
 

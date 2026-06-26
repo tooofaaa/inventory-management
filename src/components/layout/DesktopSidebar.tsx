@@ -19,7 +19,6 @@ export default function DesktopSidebar() {
     "/orders": navLabels.orders,
     "/customers": navLabels.customers,
     "/suppliers": navLabels.suppliers,
-    "/reports": navLabels.reports,
     "/settings": navLabels.settings,
   };
 
@@ -34,7 +33,7 @@ export default function DesktopSidebar() {
       {/* Top: Logo + Nav */}
       <div className="flex flex-col flex-1 min-h-0">
         {/* Logo */}
-        <div className="flex items-center gap-3 px-2 pb-7 mb-1">
+        <div className="flex items-center gap-3 px-2 pb-4">
           <div
             className="p-1.5 rounded-xl flex-shrink-0"
             style={{
@@ -56,12 +55,12 @@ export default function DesktopSidebar() {
 
         {/* Divider */}
         <div
-          className="mx-2 mb-5"
+          className="mx-2 mb-4"
           style={{ height: "1px", background: "rgba(255,255,255,0.07)" }}
         />
 
         {/* Main nav */}
-        <nav className="flex flex-col gap-1">
+        <nav className="flex flex-col gap-2">
           {MAIN_NAV_LINKS.map((link) => {
             const Icon = link.icon;
             return (
@@ -77,10 +76,10 @@ export default function DesktopSidebar() {
       </div>
 
       {/* Bottom: Footer nav + lang + logout */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         {/* Divider */}
         <div
-          className="mx-2 mb-3"
+          className="mx-2 mb-4"
           style={{ height: "1px", background: "rgba(255,255,255,0.07)" }}
         />
 
