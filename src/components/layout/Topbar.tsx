@@ -6,11 +6,10 @@ import { HamburgerIcon } from "@/components/icons";
 import GlobalSearch from "@/components/ui/GlobalSearch";
 import UserDropdown from "@/components/features/topbar/UserDropdown";
 import NotificationDropdown from "@/components/features/topbar/NotificationDropdown";
-import { User } from "@/lib/types";
+import { User, StockAlert, Supplier } from "@/lib/types";
 import { getProfile } from "@/lib/actions/profile";
 import { getLowStockNotifications } from "@/lib/actions/notifications";
 import { getPendingSuppliers } from "@/lib/actions/suppliers";
-import { StockAlert } from "@/lib/types";
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -19,13 +18,13 @@ interface TopbarProps {
 export default function Topbar({ onMenuClick }: TopbarProps) {
   const [user, setUser] = useState<User | null>(null);
   const [alerts, setAlerts] = useState<StockAlert[]>([]);
-  const [pendingSuppliers, setPendingSuppliers] = useState<any[]>([]);
+  const [pendingSuppliers, setPendingSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refreshPendingSuppliers = useCallback(async () => {
     try {
       const data = await getPendingSuppliers();
-      setPendingSuppliers(data || []);
+      setPendingSuppliers((data as unknown as Supplier[]) || []);
     } catch (error) {
       console.error("Failed to refresh pending suppliers:", error);
     }
@@ -42,7 +41,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
         setUser(userData);
         setAlerts(notificationData);
-        setPendingSuppliers(pendingSupplierData || []);
+        setPendingSuppliers((pendingSupplierData as unknown as Supplier[]) || []);
       } catch (error) {
         console.error("Failed to fetch topbar data:", error);
       } finally {

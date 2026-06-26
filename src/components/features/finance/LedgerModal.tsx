@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/utils/formatters";
 
 interface LedgerModalProps {
-  supplierId: number;
+  supplierId: number | string;
   supplierName: string;
   onClose: () => void;
 }

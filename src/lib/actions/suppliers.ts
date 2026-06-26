@@ -113,7 +113,7 @@ export async function updateSupplier(
     return { success: false, message: "Invalid data." };
   }
   
-  const updatePayload: any = {
+  const updatePayload: Record<string, string | number | null | undefined> = {
     supplier_name,
     address,
     contact_number,

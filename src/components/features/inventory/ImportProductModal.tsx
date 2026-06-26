@@ -5,10 +5,11 @@ import Modal from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { getSupplierCatalogProducts, importSupplierProduct } from "@/lib/actions/products";
 import Image from "next/image";
+import { Product } from "@/lib/types";
 
 export default function ImportProductModal({ onImportComplete }: { onImportComplete: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [catalog, setCatalog] = useState<any[]>([]);
+  const [catalog, setCatalog] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [importingId, setImportingId] = useState<number | null>(null);
 
@@ -16,7 +17,7 @@ export default function ImportProductModal({ onImportComplete }: { onImportCompl
     if (isOpen) {
       setLoading(true);
       getSupplierCatalogProducts().then((data) => {
-        setCatalog(data);
+        setCatalog(data as unknown as Product[]);
         setLoading(false);
       });
     }

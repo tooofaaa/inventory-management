@@ -5,8 +5,10 @@ import { getSupplierBalances, runDeductions } from "@/lib/actions/finance";
 import FinanceRow from "./FinanceRow";
 import { Button } from "@/components/ui/Button";
 
+import { Supplier } from "@/lib/types";
+
 export default function FinanceTable() {
-  const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isPending, startTransition] = useTransition();
@@ -14,7 +16,7 @@ export default function FinanceTable() {
   const fetchSuppliers = async () => {
     setLoading(true);
     const data = await getSupplierBalances();
-    setSuppliers(data);
+    setSuppliers(data as unknown as Supplier[]);
     setLoading(false);
   };
 

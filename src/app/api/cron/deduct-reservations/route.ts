@@ -7,7 +7,7 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     // 1. Fetch all approved suppliers whose next_deduction_date is past or now
     // and who don't already have insufficient funds
@@ -85,8 +85,9 @@ export async function GET(req: Request) {
     }
 
     return NextResponse.json({ message: 'Processed deductions', results });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in cron job:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: errMessage }, { status: 500 });
   }
 }

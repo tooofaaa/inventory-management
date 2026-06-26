@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { NotificationIcon } from "@/components/icons";
-import { StockAlert } from "@/lib/types";
+import { StockAlert, Supplier } from "@/lib/types";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function NotificationDropdown({
@@ -12,7 +12,7 @@ export default function NotificationDropdown({
   pendingSuppliers = [],
 }: {
   alerts: StockAlert[];
-  pendingSuppliers?: any[];
+  pendingSuppliers?: Supplier[];
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

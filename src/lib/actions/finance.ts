@@ -56,7 +56,7 @@ export async function getSupplierTransactions(supplierId: string | number) {
 }
 
 export async function addSupplierCredit(
-  supplierId: number,
+  supplierId: number | string,
   amount: number,
   description: string
 ): Promise<FormState> {
@@ -79,15 +79,14 @@ export async function addSupplierCredit(
     return { success: false, message: "Credit amount must be positive." };
   }
 
-  const { data: insertData, error } = await supabase
+  const { error } = await supabase
     .from("supplier_transactions")
     .insert({
       supplier_id: supplierId,
       transaction_type: "CREDIT",
       amount,
       description,
-    })
-    .select();
+    });
 
   if (error) {
     console.error("Error adding credit:", error.message, error.details, error.hint);
@@ -150,5 +149,7 @@ export async function runDeductions() {
       }
     }
     return { success: true, message: 'Processed deductions', results };
-  } catch (error: any) { return { success: false, message: error.message }; }
+  } catch (error: unknown) {
+    return { success: false, message: error instanceof Error ? error.message : String(error) };
+  }
 }

@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/utils/formatters";
 import { addSupplierCredit } from "@/lib/actions/finance";
 import LedgerModal from "./LedgerModal";
+import { Supplier } from "@/lib/types";
 
 interface FinanceRowProps {
-  supplier: any;
+  supplier: Supplier;
   onRefresh: () => void;
 }
 
@@ -40,13 +41,17 @@ export default function FinanceRow({ supplier, onRefresh }: FinanceRowProps) {
     });
   };
 
+  const balance = supplier.balance ?? 0;
+  const reservationCost = supplier.reservation_cost ?? 0;
+  const reservedSpace = supplier.reserved_space_m3 ?? 0;
+
   return (
     <>
       <tr className="hover:bg-gray-100 border-b">
         <td className="py-3 px-4 font-medium text-gray-900">{supplier.supplier_name}</td>
         <td className="py-3 px-4 text-gray-600">
-          <div>{supplier.reserved_space_m3} m³</div>
-          <div className="text-xs font-medium text-gray-800">{formatCurrency(supplier.reservation_cost)} / {supplier.reservation_period}</div>
+          <div>{reservedSpace} m³</div>
+          <div className="text-xs font-medium text-gray-800">{formatCurrency(reservationCost)} / {supplier.reservation_period || "Monthly"}</div>
           <div className="text-xs text-gray-500 mt-1">
             <span className="font-medium text-gray-700">Dates:</span>{' '}
             {supplier.reservation_start_date ? new Date(supplier.reservation_start_date).toLocaleDateString() : 'Unset'} 
@@ -55,8 +60,8 @@ export default function FinanceRow({ supplier, onRefresh }: FinanceRowProps) {
           </div>
         </td>
         <td className="py-3 px-4">
-          <span className={`font-semibold ${supplier.balance < 0 ? 'text-red-600' : supplier.balance < supplier.reservation_cost ? 'text-orange-500' : 'text-green-600'}`}>
-            {formatCurrency(supplier.balance)}
+          <span className={`font-semibold ${balance < 0 ? 'text-red-600' : balance < reservationCost ? 'text-orange-500' : 'text-green-600'}`}>
+            {formatCurrency(balance)}
           </span>
           {supplier.has_insufficient_funds && (
             <div className="text-xs text-red-500 font-medium mt-1">Payment Overdue</div>
