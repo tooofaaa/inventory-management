@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/Button";
 import { getSystemSettings, updateSystemSetting, getAdminAuditLogs, SystemSetting, AuditLog } from "@/lib/actions/adminSettings";
 import { getPricingRules, getPricingFormulas, updatePricingRule, updatePricingFormulaExpression, PricingRule, PricingFormula } from "@/lib/actions/pricingEngine";
 import { getAdminRoles, getUserRoleAssignments, assignUserRole, AdminRole, UserRoleAssignment } from "@/lib/actions/permissions";
+import { getPendingProducts, approveProduct, rejectProduct, getEnterpriseStats, PendingProduct } from "@/lib/actions/productApproval";
 import { formatCurrency, formatDate } from "@/lib/utils/formatters";
 
 export default function AdminPage() {
   const { t } = useLanguage();
   
-  const [activeTab, setActiveTab] = useState<"settings" | "pricing" | "permissions" | "audit">("settings");
+  const [activeTab, setActiveTab] = useState<"settings" | "pricing" | "permissions" | "audit" | "approvals">("approvals");
   const [isLoading, setIsLoading] = useState(true);
   
   // Settings State
@@ -27,6 +28,20 @@ export default function AdminPage() {
   const [marginPct, setMarginPct] = useState("");
   const [seasonalCoeff, setSeasonalCoeff] = useState("");
 
+  // Enterprise Stats
+  const [enterpriseStats, setEnterpriseStats] = useState<{
+    totalProducts: number;
+    pendingApprovals: number;
+    totalCustomers: number;
+    totalSuppliers: number;
+    totalOrders: number;
+    totalRevenue: number;
+  } | null>(null);
+
+  // Product Approvals State
+  const [pendingProducts, setPendingProducts] = useState<PendingProduct[]>([]);
+  const [rejectReason, setRejectReason] = useState<Record<number, string>>({});
+
   // Permissions State
   const [roles, setRoles] = useState<AdminRole[]>([]);
   const [assignments, setAssignments] = useState<UserRoleAssignment[]>([]);
@@ -39,13 +54,15 @@ export default function AdminPage() {
   async function loadData() {
     setIsLoading(true);
     try {
-      const [settingsRes, pricingRes, formulasRes, rolesRes, assignmentsRes, logsRes] = await Promise.all([
+      const [settingsRes, pricingRes, formulasRes, rolesRes, assignmentsRes, logsRes, pendingRes, statsRes] = await Promise.all([
         getSystemSettings(),
         getPricingRules(),
         getPricingFormulas(),
         getAdminRoles(),
         getUserRoleAssignments(),
         getAdminAuditLogs(),
+        getPendingProducts(),
+        getEnterpriseStats(),
       ]);
 
       setSettings(settingsRes);
@@ -67,6 +84,9 @@ export default function AdminPage() {
       setRoles(rolesRes);
       setAssignments(assignmentsRes);
       setAuditLogs(logsRes);
+
+      setPendingProducts(pendingRes.data || []);
+      setEnterpriseStats(statsRes);
     } catch (err) {
       console.error(err);
     } finally {
@@ -129,13 +149,32 @@ export default function AdminPage() {
   return (
     <div className="flex flex-col gap-6 max-w-6xl pb-10 pr-3">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Super Admin Panel</h1>
-        <p className="text-sm mt-1 text-slate-500">Configure global parameters, customize pricing engines, manage RBAC permissions, and view audit history.</p>
+        <h1 className="text-2xl font-bold text-slate-800">Enterprise Admin Panel</h1>
+        <p className="text-sm mt-1 text-slate-500">Unified control center — manage products, pricing, RBAC, settings, and cross-platform operations.</p>
       </div>
 
+      {/* Enterprise Stats Banner */}
+      {enterpriseStats && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {[
+            { label: "Total Products", value: enterpriseStats.totalProducts, color: "text-indigo-600" },
+            { label: "Pending Approvals", value: enterpriseStats.pendingApprovals, color: "text-amber-600" },
+            { label: "Customers", value: enterpriseStats.totalCustomers, color: "text-emerald-600" },
+            { label: "Suppliers", value: enterpriseStats.totalSuppliers, color: "text-sky-600" },
+            { label: "Orders", value: enterpriseStats.totalOrders, color: "text-violet-600" },
+            { label: "Revenue", value: formatCurrency(enterpriseStats.totalRevenue), color: "text-rose-600" },
+          ].map((stat) => (
+            <div key={stat.label} className="bg-white shadow-sm border border-gray-100 rounded-xl p-4 flex flex-col gap-1">
+              <p className={`text-lg font-extrabold ${stat.color}`}>{stat.value}</p>
+              <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Tabs */}
-      <div className="flex border-b border-gray-150 gap-4 mb-4">
-        {(["settings", "pricing", "permissions", "audit"] as const).map((tab) => (
+      <div className="flex border-b border-gray-150 gap-2 mb-4 flex-wrap">
+        {(["approvals", "settings", "pricing", "permissions", "audit"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -145,7 +184,7 @@ export default function AdminPage() {
                 : "border-transparent text-gray-500 hover:text-slate-700"
             }`}
           >
-            {tab === "pricing" ? "Pricing Engine" : tab === "permissions" ? "Permissions & RBAC" : tab === "audit" ? "Audit Trails" : tab}
+            {tab === "approvals" ? `Product Approvals${enterpriseStats?.pendingApprovals ? ` (${enterpriseStats.pendingApprovals})` : ""}` : tab === "pricing" ? "Pricing Engine" : tab === "permissions" ? "Permissions & RBAC" : tab === "audit" ? "Audit Trails" : tab}
           </button>
         ))}
       </div>
@@ -154,6 +193,68 @@ export default function AdminPage() {
         
         {/* Left Form controls */}
         <div className="w-full lg:w-3/5">
+          {activeTab === "approvals" && (
+            <div className="bg-white shadow-md p-6 rounded-xl flex flex-col gap-5">
+              <h3 className="font-bold text-slate-800 border-b border-gray-100 pb-3">
+                Supplier Product Approvals
+                {pendingProducts.length > 0 && (
+                  <span className="ml-2 bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full">{pendingProducts.length} pending</span>
+                )}
+              </h3>
+              {pendingProducts.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-emerald-600 font-semibold text-sm">✓ All products reviewed</p>
+                  <p className="text-xs text-gray-400 mt-1">No pending supplier submissions.</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {pendingProducts.map((product) => (
+                    <div key={product.id} className="border border-amber-100 bg-amber-50/30 rounded-xl p-4 flex flex-col gap-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-bold text-slate-800 text-sm">{product.product_name}</p>
+                          <p className="text-xs text-gray-500">{product.product_category} · {product.product_type}</p>
+                          <p className="text-xs text-indigo-500 mt-0.5">By: {product.supplier_name}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-emerald-600">{formatCurrency(product.sell_price)}</p>
+                          <p className="text-xs text-gray-400">Stock: {product.amount_stock}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 items-center flex-wrap">
+                        <input
+                          type="text"
+                          placeholder="Rejection reason (optional)"
+                          value={rejectReason[product.id] || ""}
+                          onChange={(e) => setRejectReason(r => ({ ...r, [product.id]: e.target.value }))}
+                          className="flex-1 px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:border-red-300"
+                        />
+                        <button
+                          onClick={async () => {
+                            await approveProduct(product.id);
+                            await loadData();
+                          }}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg cursor-pointer transition-colors"
+                        >
+                          ✓ Approve
+                        </button>
+                        <button
+                          onClick={async () => {
+                            await rejectProduct(product.id, rejectReason[product.id]);
+                            await loadData();
+                          }}
+                          className="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-4 py-1.5 rounded-lg cursor-pointer transition-colors border border-red-200"
+                        >
+                          ✗ Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {activeTab === "settings" && (
             <div className="bg-white shadow-md p-6 rounded-xl flex flex-col gap-5">
               <h3 className="font-bold text-slate-800 border-b border-gray-100 pb-3">Global Configurations</h3>
