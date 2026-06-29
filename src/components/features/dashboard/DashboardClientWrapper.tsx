@@ -12,6 +12,7 @@ import BestSellingTable from "@/components/features/dashboard/BestSellingTable";
 import LowStockList from "@/components/features/dashboard/LowStockList";
 import SalesPurchaseChart from "@/components/features/dashboard/SalesPurchaseChart";
 import OrderSummaryChart from "@/components/features/dashboard/OrderSummaryChart";
+import SystemHealthWidget from "@/components/features/dashboard/SystemHealthWidget";
 import { DashboardData } from "@/lib/types";
 
 export default function DashboardClientWrapper({
@@ -73,6 +74,7 @@ export default function DashboardClientWrapper({
 
   return (
     <div className="flex flex-col gap-3 md:mr-3">
+      <SystemHealthWidget />
       <div className="flex flex-col md:flex-row gap-3">
         <SalesOverview data={data.sales} />
         <InventorySummary data={data.inventory} />

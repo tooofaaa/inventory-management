@@ -57,6 +57,7 @@ export const translations = {
       reports: "Reports",
       settings: "Settings",
       logOut: "Log Out",
+      admin: "Admin Panel",
     },
 
     // Topbar
@@ -160,6 +161,7 @@ export const translations = {
       reports: "التقارير",
       settings: "الإعدادات",
       logOut: "تسجيل الخروج",
+      admin: "لوحة التحكم الرئيسية",
     },
 
     // Topbar

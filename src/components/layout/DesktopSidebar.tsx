@@ -20,6 +20,7 @@ export default function DesktopSidebar() {
     "/customers": navLabels.customers,
     "/suppliers": navLabels.suppliers,
     "/settings": navLabels.settings,
+    "/admin": navLabels.admin,
   };
 
   return (

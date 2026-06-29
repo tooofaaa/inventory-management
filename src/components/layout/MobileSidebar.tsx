@@ -31,6 +31,7 @@ export default function MobileSidebar({
     "/customers": navLabels.customers,
     "/suppliers": navLabels.suppliers,
     "/settings": navLabels.settings,
+    "/admin": navLabels.admin,
   };
 
   useEffect(() => {

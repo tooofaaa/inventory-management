@@ -58,22 +58,16 @@ export async function signup(
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: {
+        role: "admin",
+        name: display_name,
+      },
+    },
   });
 
   if (error) {
     return { success: "", error: error.message };
-  }
-
-  const { error: dbError } = await supabase.from("users").insert([
-    {
-      id: data.user?.id,
-      name: display_name,
-      email: data.user?.email,
-    },
-  ]);
-
-  if (dbError) {
-    return { success: "", error: "Error saving user to database." };
   }
 
   return {

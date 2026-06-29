@@ -54,6 +54,11 @@ export const MAIN_NAV_LINKS: NavLink[] = [
     label: "Finance",
     icon: ReportsIcon,
   },
+  {
+    href: "/admin",
+    label: "Admin Panel",
+    icon: SettingsIcon,
+  },
 ];
 
 export const FOOTER_NAV_LINKS: NavLink[] = [
